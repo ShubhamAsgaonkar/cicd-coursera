@@ -1,0 +1,33 @@
+# in github actions we are going to add 2 things one is linting and 2nd is unit test
+
+name: CI workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.9-slim
+
+    steps:
+      - name: checkout
+        uses: action/checkout@v3
+      - name: Install dependencies
+        run: |
+         python -m pip install --upgrade pip
+         pip install requirements.txt
+
+      - name: lint with flake8
+        run: |
+         flake8 service --count -select=E9,F63,F7,F82 --show-source --statistics
+         flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+
+
+      - name: unit test with nose
+        run: nosetest -v --with-spec --spec-colour --with-coverage --with-coverage-package=app
