@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  description: this task will cleanup
+  workspaces:
+    - name: source
+  steps:
+    - name: remove
+      image: alpine:3
+      env:
+        - name: WORKSPACES_SOURCE_PATH
+          value: $(WORKSPACES_SOURCE_PATH)
+      workingDir: $(WORKSPACES_SOURCE_PATH)
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      script: |
+        #!/user/bin/env/ sh
+        set -eu
+        echo "cleaning the resource"
+        
+        if [-d "${WORKSPACES_SOURCE_PATH}"] ; then
+          rm -rf "${WORKSPACES_SOURCE_PATH:?}"/*
+          rm -rf "${WORKSPACES_SOURCE_PATH}"/.[!.]
+          rm -rf "${WORKSPACES_SOURCE_PATH}"/..?
+        fi
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: nose
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: args
+      description: args to pass to nose
+      type: string
+      default: "-v"
+  description: this is for linting using nose
+  steps:
+    - name: nosetest
+      image: python:3.9-slim
+      workingDir: $(WORKSPACES_SOURCE_PATH)
+      script: |
+        #/bin/bash
+        set -eupython -m pip install --upgrade pip wheel
+        pip install -r requirements.txt
+        nosetest $(params.args)
+
+
+
+
