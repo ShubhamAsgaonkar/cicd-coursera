@@ -18,14 +18,14 @@ spec:
         runAsUser: 0
       script: |
         #!/user/bin/env/ sh
-        set -eu
-        echo "cleaning the resource"
-        
-        if [-d "${WORKSPACES_SOURCE_PATH}"] ; then
-          rm -rf "${WORKSPACES_SOURCE_PATH:?}"/*
-          rm -rf "${WORKSPACES_SOURCE_PATH}"/.[!.]
-          rm -rf "${WORKSPACES_SOURCE_PATH}"/..?
-        fi
+             set -eu
+             echo "cleaning the resource"
+            
+             if [-d "${WORKSPACES_SOURCE_PATH}"] ; then
+               rm -rf "${WORKSPACES_SOURCE_PATH:?}"/*
+               rm -rf "${WORKSPACES_SOURCE_PATH}"/.[!.]
+               rm -rf "${WORKSPACES_SOURCE_PATH}"/..?
+             fi
 
 ---
 apiVersion: tekton.dev/v1beta1
